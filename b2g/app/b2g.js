@@ -1138,3 +1138,5 @@ pref("dom.serviceWorkers.enabled", false);
 
 // Retain at most 10 processes' layers buffers
 pref("layers.compositor-lru-size", 10);
+
+pref("dom.presentation.enabled", true);

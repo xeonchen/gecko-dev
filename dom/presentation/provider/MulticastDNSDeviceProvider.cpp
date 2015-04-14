@@ -7,6 +7,7 @@
 #include "mozilla/Logging.h"
 #include "nsAutoPtr.h"
 #include "nsComponentManagerUtils.h"
+#include "nsHashPropertyBag.h"
 #include "nsIPresentationDevice.h"
 #include "nsServiceManagerUtils.h"
 
@@ -169,6 +170,23 @@ MulticastDNSDeviceProvider::RegisterService(uint32_t aPort)
   if (NS_WARN_IF(NS_FAILED(rv = serviceInfo->SetPort(aPort)))) {
     return rv;
   }
+
+  /*********
+  ** DEBUG *
+  **********/
+
+  nsCOMPtr<nsIWritablePropertyBag2> attributes = new nsHashPropertyBag();
+  NS_WARN_IF(NS_FAILED(rv = attributes->SetPropertyAsACString(NS_ConvertASCIItoUTF16("test_key_1"),
+                                                              NS_LITERAL_CSTRING("test_value_1"))));
+  NS_WARN_IF(NS_FAILED(rv = attributes->SetPropertyAsACString(NS_ConvertASCIItoUTF16("test_key_2"),
+                                                              NS_LITERAL_CSTRING("test_value_2"))));
+  NS_WARN_IF(NS_FAILED(rv = attributes->SetPropertyAsACString(NS_ConvertASCIItoUTF16("test_key_3"),
+                                                              NS_LITERAL_CSTRING("test_value_3"))));
+  NS_WARN_IF(NS_FAILED(rv = serviceInfo->SetAttributes(attributes)));
+
+  /*********
+  ** DEBUG *
+  **********/
 
   if (mRegisterRequest) {
     mRegisterRequest->Cancel(NS_OK);
