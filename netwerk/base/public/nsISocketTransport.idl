@@ -220,4 +220,9 @@ interface nsISocketTransport : nsITransport
     attribute boolean keepaliveEnabled;
     void setKeepaliveVals(in long keepaliveIdleTime,
                           in long keepaliveRetryInterval);
+
+    /**
+     * The value set to SO_MARK, can be used for mark-based routing.
+     */
+    attribute unsigned long sockOptMark;
 };

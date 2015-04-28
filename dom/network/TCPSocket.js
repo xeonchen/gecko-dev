@@ -255,9 +255,16 @@ TCPSocket.prototype = {
     } else {
       options = ['starttls'];
     }
-    return Cc["@mozilla.org/network/socket-transport-service;1"]
-             .getService(Ci.nsISocketTransportService)
-             .createTransport(options, 1, host, port, null);
+
+    let transport = Cc["@mozilla.org/network/socket-transport-service;1"]
+                      .getService(Ci.nsISocketTransportService)
+                      .createTransport(options, 1, host, port, null);
+
+#ifdef MOZ_WIDGET_GONK
+    transport.sockOptMark = this._appId;
+#endif
+
+    return transport;
   },
 
   _sendBufferedAmount: function ts_sendBufferedAmount() {

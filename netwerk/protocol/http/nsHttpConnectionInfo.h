@@ -133,6 +133,9 @@ public:
     // Returns true when mHost is an RFC1918 literal.
     bool HostIsLocalIPLiteral() const;
 
+    void SetAppId(uint32_t aAppId) { mAppId = aAppId; }
+    uint32_t GetAppId() const { return mAppId; }
+
 private:
     void Init(const nsACString &host,
               int32_t port,
@@ -155,6 +158,7 @@ private:
     bool                   mEndToEndSSL;
     bool                   mUsingConnect;  // if will use CONNECT with http proxy
     nsCString              mNPNToken;
+    uint32_t               mAppId;
 
 // for nsRefPtr
     NS_INLINE_DECL_THREADSAFE_REFCOUNTING(nsHttpConnectionInfo)

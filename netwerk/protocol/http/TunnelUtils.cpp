@@ -1627,6 +1627,18 @@ SocketTransportShim::SetQoSBits(uint8_t aQoSBits)
   return mWrapped->SetQoSBits(aQoSBits);
 }
 
+NS_IMETHODIMP
+SocketTransportShim::GetSockOptMark(uint32_t *aSockOptMark)
+{
+  return mWrapped->GetSockOptMark(aSockOptMark);
+}
+
+NS_IMETHODIMP
+SocketTransportShim::SetSockOptMark(uint32_t aSockOptMark)
+{
+  return mWrapped->SetSockOptMark(aSockOptMark);
+}
+
 NS_IMPL_ISUPPORTS(TLSFilterTransaction, nsITimerCallback)
 NS_IMPL_ISUPPORTS(SocketTransportShim, nsISocketTransport, nsITransport)
 NS_IMPL_ISUPPORTS(InputStreamShim, nsIInputStream, nsIAsyncInputStream)
