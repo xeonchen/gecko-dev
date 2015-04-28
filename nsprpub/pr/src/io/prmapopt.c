@@ -175,6 +175,16 @@ PRStatus PR_CALLBACK _PR_SocketGetSocketOption(PRFileDesc *fd, PRSocketOptionDat
                     (char*)&data->value.mcast_if.inet.ip, &length);
                 break;
             }
+            case PR_SockOpt_Mark:
+            {
+                PRUint32 value;
+                length = sizeof(value);
+                rv = _PR_MD_GETSOCKOPT(fd, level, name, (char*)&value, &length);
+                if (PR_SUCCESS == rv) {
+                    data->value.mark = value;
+                }
+                break;
+            }
             default:
                 PR_NOT_REACHED("Unknown socket option");
                 break;
@@ -312,6 +322,13 @@ PRStatus PR_CALLBACK _PR_SocketSetSocketOption(PRFileDesc *fd, const PRSocketOpt
                     sizeof(data->value.mcast_if.inet.ip));
                 break;
             }
+            case PR_SockOpt_Mark:
+            {
+                rv = _PR_MD_SETSOCKOPT(
+                    fd, level, name, (char*)&data->value.mark,
+                    sizeof(data->value.mark));
+                break;
+            }
             default:
                 PR_NOT_REACHED("Unknown socket option");
                 break;
@@ -422,6 +439,10 @@ PRStatus PR_CALLBACK _PR_SocketSetSocketOption(PRFileDesc *fd, const PRSocketOpt
 #define SO_REUSEPORT        _PR_NO_SUCH_SOCKOPT
 #endif
 
+#ifndef SO_MARK                         /* set the mark for each packet */
+#define SO_MARK             _PR_NO_SUCH_SOCKOPT
+#endif
+
 PRStatus _PR_MapOptionName(
     PRSockOption optname, PRInt32 *level, PRInt32 *name)
 {
@@ -430,14 +451,14 @@ PRStatus _PR_MapOptionName(
         0, SO_LINGER, SO_REUSEADDR, SO_KEEPALIVE, SO_RCVBUF, SO_SNDBUF,
         IP_TTL, IP_TOS, IP_ADD_MEMBERSHIP, IP_DROP_MEMBERSHIP,
         IP_MULTICAST_IF, IP_MULTICAST_TTL, IP_MULTICAST_LOOP,
-        TCP_NODELAY, TCP_MAXSEG, SO_BROADCAST, SO_REUSEPORT
+        TCP_NODELAY, TCP_MAXSEG, SO_BROADCAST, SO_REUSEPORT, SO_MARK
     };
     static PRInt32 socketLevels[PR_SockOpt_Last] =
     {
         0, SOL_SOCKET, SOL_SOCKET, SOL_SOCKET, SOL_SOCKET, SOL_SOCKET,
         IPPROTO_IP, IPPROTO_IP, IPPROTO_IP, IPPROTO_IP,
         IPPROTO_IP, IPPROTO_IP, IPPROTO_IP,
-        IPPROTO_TCP, IPPROTO_TCP, SOL_SOCKET, SOL_SOCKET
+        IPPROTO_TCP, IPPROTO_TCP, SOL_SOCKET, SOL_SOCKET, SOL_SOCKET
     };
 
     if ((optname < PR_SockOpt_Linger)

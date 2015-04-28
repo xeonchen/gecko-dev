@@ -213,6 +213,8 @@ typedef enum PRSockOption
     PR_SockOpt_Broadcast,       /* enable broadcast */
     PR_SockOpt_Reuseport,       /* allow local address & port reuse on
                                  * platforms that support it */
+    PR_SockOpt_Mark,            /* Set the mark for each packet sent
+                                 * through this socket */
     PR_SockOpt_Last
 } PRSockOption;
 
@@ -249,6 +251,7 @@ typedef struct PRSocketOptionData
         PRMcastRequest add_member;  /* add an IP group membership */
         PRMcastRequest drop_member; /* Drop an IP group membership */
         PRNetAddr mcast_if;         /* multicast interface address */
+        PRUint32 mark;              /* mark for each packet */
     } value;
 } PRSocketOptionData;
 
