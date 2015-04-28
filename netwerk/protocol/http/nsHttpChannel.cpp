@@ -5036,6 +5036,8 @@ nsHttpChannel::BeginConnect()
     } else {
         LOG(("nsHttpChannel %p Using default connection info", this));
         mConnectionInfo = new nsHttpConnectionInfo(host, port, EmptyCString(), mUsername, proxyInfo, isHttps);
+        uint32_t appId = GetLoadContextInfo(this)->AppId();
+        mConnectionInfo->SetAppId(appId);
         Telemetry::Accumulate(Telemetry::HTTP_TRANSACTION_USE_ALTSVC, false);
     }
 

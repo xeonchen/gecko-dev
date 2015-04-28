@@ -27,6 +27,10 @@
 #include "prerror.h"
 #include "nsAutoPtr.h"
 
+#ifdef MOZ_WIDGET_GONK
+#include "nsISocketMarkerService.h"
+#endif
+
 class nsSocketTransport;
 class nsICancelable;
 class nsIDNSRecord;
@@ -440,6 +444,13 @@ private:
     int32_t mKeepaliveIdleTimeS;
     int32_t mKeepaliveRetryIntervalS;
     int32_t mKeepaliveProbeCount;
+
+#ifdef MOZ_WIDGET_GONK
+    bool CheckMark(uint32_t aAppId);
+
+    nsCOMPtr<nsISocketMarkerService> mSocketMarkerService;
+    uint32_t mSocketOptionMark;
+#endif
 };
 
 #endif // !nsSocketTransport_h__

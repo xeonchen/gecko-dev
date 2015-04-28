@@ -755,6 +755,9 @@ nsSocketTransport::nsSocketTransport()
     , mKeepaliveIdleTimeS(-1)
     , mKeepaliveRetryIntervalS(-1)
     , mKeepaliveProbeCount(-1)
+#ifdef MOZ_WIDGET_GONK
+    , mSocketOptionMark(0)
+#endif
 {
     SOCKET_LOG(("creating nsSocketTransport @%p\n", this));
 
@@ -1371,6 +1374,20 @@ nsSocketTransport::InitiateSocket()
         mFDref = 1;
         mFDconnected = false;
     }
+
+#ifdef MOZ_WIDGET_GONK
+    if (CheckMark(mSocketOptionMark)) {
+        PRSocketOptionData opt;
+        opt.option = PR_SockOpt_Mark;
+        opt.value.mark = mSocketOptionMark;
+
+        // Setting this option requires the CAP_NET_ADMIN capability.
+        if (PR_SetSocketOption(fd, &opt) != PR_SUCCESS) {
+            MOZ_ASSERT(false);
+            return NS_ERROR_FAILURE;
+        }
+    }
+#endif
 
     SOCKET_LOG(("  advancing to STATE_CONNECTING\n"));
     mState = STATE_CONNECTING;
@@ -2790,6 +2807,28 @@ nsSocketTransport::SetKeepaliveVals(int32_t aIdleTime,
 #endif
 }
 
+NS_IMETHODIMP
+nsSocketTransport::GetSockOptMark(uint32_t *aSockOptMark)
+{
+#ifdef MOZ_WIDGET_GONK
+    *aSockOptMark = mSocketOptionMark;
+    return NS_OK;
+#else
+    return NS_ERROR_NOT_IMPLEMENTED;
+#endif
+}
+
+NS_IMETHODIMP
+nsSocketTransport::SetSockOptMark(uint32_t aSockOptMark)
+{
+#ifdef MOZ_WIDGET_GONK
+    mSocketOptionMark = aSockOptMark;
+    return NS_OK;
+#else
+    return NS_ERROR_NOT_IMPLEMENTED;
+#endif
+}
+
 #ifdef ENABLE_SOCKET_TRACING
 
 #include <stdio.h>
@@ -3095,3 +3134,25 @@ nsSocketTransport::SendPRBlockingTelemetry(PRIntervalTime aStart,
                               PR_IntervalToMilliseconds(now - aStart));
     }
 }
+
+#ifdef MOZ_WIDGET_GONK
+bool
+nsSocketTransport::CheckMark(uint32_t aAppId)
+{
+  nsresult rv;
+  if (!mSocketMarkerService) {
+    mSocketMarkerService = do_GetService(NS_SOCKETMARKER_CONTRACTID, &rv);
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return false;
+    }
+  }
+
+  bool enabled = false;
+  rv = mSocketMarkerService->GetMarkEnabled(aAppId, &enabled);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return false;
+  }
+
+  return enabled;
+}
+#endif

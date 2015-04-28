@@ -63,6 +63,7 @@ nsHttpConnectionInfo::Init(const nsACString &host, int32_t port,
     mEndToEndSSL = e2eSSL;
     mUsingConnect = false;
     mNPNToken = npnToken;
+    mAppId = NECKO_NO_APP_ID;
 
     mUsingHttpsProxy = (proxyInfo && proxyInfo->IsHTTPS());
     mUsingHttpProxy = mUsingHttpsProxy || (proxyInfo && proxyInfo->IsHTTP());

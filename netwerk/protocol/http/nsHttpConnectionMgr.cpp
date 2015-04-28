@@ -3025,6 +3025,11 @@ nsHttpConnectionMgr::OnMsgSpeculativeConnect(int32_t, void *param)
         allow1918 = args->mAllow1918;
     }
 
+#ifdef MOZ_WIDGET_GONK
+    uint32_t appId = args->mTrans->ConnectionInfo()->GetAppId();
+    ent->mConnInfo->SetAppId(appId);
+#endif
+
     bool keepAlive = args->mTrans->Caps() & NS_HTTP_ALLOW_KEEPALIVE;
     if (mNumHalfOpenConns < parallelSpeculativeConnectLimit &&
         ((ignoreIdle && (ent->mIdleConns.Length() < parallelSpeculativeConnectLimit)) ||
@@ -3201,6 +3206,11 @@ nsHalfOpenSocket::SetupStreams(nsISocketTransport **transport,
     socketTransport->SetConnectionFlags(tmpFlags);
 
     socketTransport->SetQoSBits(gHttpHandler->GetQoSBits());
+
+#ifdef MOZ_WIDGET_GONK
+    uint32_t appId = mEnt->mConnInfo->GetAppId();
+    socketTransport->SetSockOptMark(appId);
+#endif
 
     if (!ci->GetNetworkInterfaceId().IsEmpty()) {
         socketTransport->SetNetworkInterfaceId(ci->GetNetworkInterfaceId());
