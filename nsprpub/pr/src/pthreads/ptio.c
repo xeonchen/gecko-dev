@@ -2932,6 +2932,17 @@ static PRStatus pt_GetSocketOption(PRFileDesc *fd, PRSocketOptionData *data)
                     || (sizeof(data->value.mcast_if.inet.ip) == length));
                 break;
             }
+            case PR_SockOpt_Mark:
+            {
+                PRUint32 value;
+                length = sizeof(value);
+                rv = getsockopt(
+                    fd->secret->md.osfd, level, name,
+                    (char*)&value, &length);
+                PR_ASSERT((-1 == rv) || (sizeof(value) == length));
+                data->value.mark = value;
+                break;
+            }
             default:
                 PR_NOT_REACHED("Unknown socket option");
                 break;
@@ -3041,6 +3052,14 @@ static PRStatus pt_SetSocketOption(PRFileDesc *fd, const PRSocketOptionData *dat
                     fd->secret->md.osfd, level, name,
                     (char*)&data->value.mcast_if.inet.ip,
                     sizeof(data->value.mcast_if.inet.ip));
+                break;
+            }
+            case PR_SockOpt_Mark:
+            {
+                rv = setsockopt(
+                    fd->secret->md.osfd, level, name,
+                    (char*)&data->value.mark,
+                    sizeof(data->value.mark));
                 break;
             }
             default:
