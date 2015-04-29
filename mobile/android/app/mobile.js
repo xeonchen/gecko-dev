@@ -940,3 +940,5 @@ pref("consoleservice.logcat", true);
 pref("dom.serviceWorkers.enabled", true);
 pref("dom.serviceWorkers.interception.enabled", true);
 #endif
+
+pref("dom.presentation.enabled", true);
