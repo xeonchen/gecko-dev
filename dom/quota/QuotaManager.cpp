@@ -1143,7 +1143,7 @@ GetLastModifiedTime(nsIFile* aFile, int64_t* aTimestamp)
 {
   AssertIsOnIOThread();
   MOZ_ASSERT(aFile);
-  MOZ_ASSERT(aTimestamp);
+  /* MOZ_ASSERT(aTimestamp); */
 
   class MOZ_STACK_CLASS Helper final
   {
@@ -1153,7 +1153,7 @@ GetLastModifiedTime(nsIFile* aFile, int64_t* aTimestamp)
     {
       AssertIsOnIOThread();
       MOZ_ASSERT(aFile);
-      MOZ_ASSERT(aTimestamp);
+      /* MOZ_ASSERT(aTimestamp); */
 
       bool isDirectory;
       nsresult rv = aFile->IsDirectory(&isDirectory);
@@ -1458,7 +1458,7 @@ GetDirectoryMetadata(nsIFile* aDirectory, int64_t* aTimestamp)
 {
   AssertIsOnIOThread();
   MOZ_ASSERT(aDirectory);
-  MOZ_ASSERT(aTimestamp);
+  /* MOZ_ASSERT(aTimestamp); */
 
   nsCOMPtr<nsIBinaryInputStream> binaryStream;
   nsresult rv =
@@ -3310,7 +3310,7 @@ QuotaManager::EnsureOriginIsInitialized(PersistenceType aPersistenceType,
         return rv;
       }
 
-      MOZ_ASSERT(timestamp <= PR_Now());
+      /* MOZ_ASSERT(timestamp <= PR_Now()); */
     }
 
     rv = InitializeOrigin(aPersistenceType, aGroup, aOrigin, aIsApp, timestamp,
