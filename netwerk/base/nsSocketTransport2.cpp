@@ -1884,6 +1884,22 @@ nsSocketTransport::OnSocketReady(PRFileDesc *fd, int16_t outFlags)
     }
 
     if (mState == STATE_TRANSFERRING) {
+#ifdef DEBUG
+        PRSocketOptionData opt;
+        opt.option = PR_SockOpt_Mark;
+        if (PR_GetSocketOption(fd, &opt) != PR_SUCCESS) {
+            MOZ_ASSERT(false);
+        }
+
+#ifdef MOZ_WIDGET_GONK
+        if (mSocketOptionMark & 0x01) {
+            MOZ_ASSERT(opt.value.mark == mSocketOptionMark);
+        } else {
+            MOZ_ASSERT(opt.value.mark == 0);
+        }
+#endif
+
+#endif
         // if waiting to write and socket is writable or hit an exception.
         if ((mPollFlags & PR_POLL_WRITE) && (outFlags & ~PR_POLL_READ)) {
             // assume that we won't need to poll any longer (the stream will

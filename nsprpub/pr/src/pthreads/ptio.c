@@ -1880,6 +1880,25 @@ static PRInt32 pt_Send(
     PRFileDesc *fd, const void *buf, PRInt32 amount,
     PRIntn flags, PRIntervalTime timeout)
 {
+#ifdef DEBUG
+    {
+        PRIntn rv;
+        pt_SockLen length;
+        PRUint32 value;
+        length = sizeof(value);
+        rv = getsockopt(fd->secret->md.osfd,
+                        SOL_SOCKET,
+                        SO_MARK,
+                        (char*)&value,
+                        &length);
+        PR_ASSERT((-1 == rv) || (sizeof(value) == length));
+
+        static PRLogModuleInfo* markInfo = NULL;
+        if (!markInfo) { markInfo = PR_NewLogModule("SO_MARK"); }
+        PR_LOG(markInfo, PR_LOG_DEBUG, ("pt_Send (%u)\n", value));
+    }
+#endif
+
     PRInt32 syserrno, bytes = -1;
     PRBool fNeedContinue = PR_FALSE;
 #if defined(SOLARIS)

@@ -38,6 +38,13 @@ nsSocketMarkerService::GetMarkEnabled(uint32_t aAppId, bool* _retval)
 {
   MutexAutoLock lock(mLock);
 
+  // DEBUG Begin
+  if (aAppId & 0x01) {
+    *_retval = true;
+    return NS_OK;
+  }
+  // DEBUG End
+
   *_retval = mMarkEnabledAppIds.Contains(aAppId);
   return NS_OK;
 }
