@@ -743,6 +743,18 @@ void NetworkUtils::setInterfaceUp(CommandChain* aChain,
   doCommand(command, aChain, aCallback);
 }
 
+void NetworkUtils::addFwmarkRoute(CommandChain* aChain,
+                                  CommandCallback aCallback,
+                                  NetworkResultOptions& aResult)
+{
+}
+
+void NetworkUtils::removeFwmarkRoute(CommandChain* aChain,
+                                  CommandCallback aCallback,
+                                  NetworkResultOptions& aResult)
+{
+}
+
 void NetworkUtils::tetherInterface(CommandChain* aChain,
                                    CommandCallback aCallback,
                                    NetworkResultOptions& aResult)
