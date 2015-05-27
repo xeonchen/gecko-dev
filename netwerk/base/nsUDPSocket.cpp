@@ -815,6 +815,19 @@ nsUDPSocket::InitWithAddress(const NetAddr *aAddr, nsIPrincipal *aPrincipal,
     GetActiveNetworkInterface(activeNetwork);
     mActiveNetwork =
       new nsMainThreadPtrHolder<nsINetworkInterface>(activeNetwork);
+
+    if (CheckMark(mAppId)) {
+      PRSocketOptionData opt;
+      opt.option = PR_SockOpt_Mark;
+      opt.value.mark = mAppId;
+
+      // Setting this option requires the CAP_NET_ADMIN capability.
+      if (PR_SetSocketOption(mFD, &opt) != PR_SUCCESS) {
+        MOZ_ASSERT(false);
+        return NS_ERROR_FAILURE;
+      }
+    }
+
   }
 #endif
 
@@ -941,6 +954,28 @@ nsUDPSocket::SaveNetworkStats(bool aEnforce)
   }
 #endif
 }
+
+#ifdef MOZ_WIDGET_GONK
+bool
+nsUDPSocket::CheckMark(uint32_t aAppId)
+{
+  nsresult rv;
+  if (!mSocketMarkerService) {
+    mSocketMarkerService = do_GetService(NS_SOCKETMARKER_CONTRACTID, &rv);
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return false;
+    }
+  }
+
+  bool enabled = false;
+  rv = mSocketMarkerService->GetMarkEnabled(aAppId, &enabled);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return false;
+  }
+
+  return enabled;
+}
+#endif
 
 NS_IMETHODIMP
 nsUDPSocket::GetAddress(NetAddr *aResult)

@@ -14,6 +14,7 @@
 
 #ifdef MOZ_WIDGET_GONK
 #include "nsINetworkManager.h"
+#include "nsISocketMarkerService.h"
 #include "nsProxyRelease.h"
 #endif
 
@@ -57,6 +58,10 @@ private:
 
   void SaveNetworkStats(bool aEnforce);
 
+#ifdef MOZ_WIDGET_GONK
+  bool CheckMark(uint32_t aAppId);
+#endif
+
   // lock protects access to mListener;
   // so mListener is not cleared while being used/locked.
   mozilla::Mutex                       mLock;
@@ -73,6 +78,7 @@ private:
   uint64_t   mByteWriteCount;
 #ifdef MOZ_WIDGET_GONK
   nsMainThreadPtrHandle<nsINetworkInterface> mActiveNetwork;
+  nsCOMPtr<nsISocketMarkerService> mSocketMarkerService;
 #endif
 };
 
