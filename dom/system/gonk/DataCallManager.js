@@ -648,8 +648,8 @@ DataCallHandler.prototype = {
       if (DEBUG) {
         this.debug("Disconnect data call when Wifi is connected.");
       }
-      networkInterface.disconnect();
-      return;
+      // networkInterface.disconnect();
+      // return;
     }
 
     if (!this.dataCallSettings.enabled || defaultDataCallConnected) {
@@ -668,7 +668,7 @@ DataCallHandler.prototype = {
       if (DEBUG) {
         this.debug("Don't connect data call when Wifi is connected.");
       }
-      return;
+      // return;
     }
     if (this._pendingApnSettings) {
       if (DEBUG) this.debug("We're changing apn settings, ignore any changes.");

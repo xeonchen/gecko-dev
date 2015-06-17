@@ -743,16 +743,52 @@ void NetworkUtils::setInterfaceUp(CommandChain* aChain,
   doCommand(command, aChain, aCallback);
 }
 
+void NetworkUtils::addFwmarkRule(CommandChain* aChain,
+                                  CommandCallback aCallback,
+                                  NetworkResultOptions& aResult)
+{
+  char command[MAX_COMMAND_SIZE];
+  snprintf(command, MAX_COMMAND_SIZE - 1, "interface fwmark rule add %s",
+          GET_CHAR(mIfname));
+  doCommand(command, aChain, aCallback);
+}
+
+void NetworkUtils::removeFwmarkRule(CommandChain* aChain,
+                                  CommandCallback aCallback,
+                                  NetworkResultOptions& aResult)
+{
+  char command[MAX_COMMAND_SIZE];
+  snprintf(command, MAX_COMMAND_SIZE - 1, "interface fwmark rule remove %s",
+          GET_CHAR(mIfname));
+  doCommand(command, aChain, aCallback);
+}
+
 void NetworkUtils::addFwmarkRoute(CommandChain* aChain,
                                   CommandCallback aCallback,
                                   NetworkResultOptions& aResult)
 {
+  char command[MAX_COMMAND_SIZE];
+  uint32_t prefix = atoi(GET_CHAR(mPrefix));
+  uint32_t ip = inet_addr(GET_CHAR(mIp));
+  char* networkAddr = getNetworkAddr(ip, prefix);
+
+  snprintf(command, MAX_COMMAND_SIZE - 1, "interface fwmark route add %s %s %s",
+          GET_CHAR(mIfname), networkAddr, GET_CHAR(mPrefix));
+  doCommand(command, aChain, aCallback);
 }
 
 void NetworkUtils::removeFwmarkRoute(CommandChain* aChain,
                                   CommandCallback aCallback,
                                   NetworkResultOptions& aResult)
 {
+  char command[MAX_COMMAND_SIZE];
+  uint32_t prefix = atoi(GET_CHAR(mPrefix));
+  uint32_t ip = inet_addr(GET_CHAR(mIp));
+  char* networkAddr = getNetworkAddr(ip, prefix);
+
+  snprintf(command, MAX_COMMAND_SIZE - 1, "interface fwmark route remove %s %s %s",
+          GET_CHAR(mIfname), networkAddr, GET_CHAR(mPrefix));
+  doCommand(command, aChain, aCallback);
 }
 
 void NetworkUtils::tetherInterface(CommandChain* aChain,

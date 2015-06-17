@@ -358,6 +358,8 @@ private:
   static void removeQuota(PARAMS);
   static void setAlarm(PARAMS);
   static void setInterfaceUp(PARAMS);
+  static void addFwmarkRule(PARAMS);
+  static void removeFwmarkRule(PARAMS);
   static void addFwmarkRoute(PARAMS);
   static void removeFwmarkRoute(PARAMS);
   static void tetherInterface(PARAMS);
