@@ -1,0 +1,33 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsISupports.idl"
+
+/**
+ * nsISocketMarkerService
+ *
+ * NOTE: This is a free-threaded interface, meaning that the methods on
+ * this interface may be called from any thread.
+ */
+[scriptable, uuid(640053cf-40c2-412f-b5e6-6f09dba27465)]
+interface nsISocketMarkerService : nsISupports
+{
+  /**
+   * Enable or disable by App ID.
+   * @param   aAppId
+   *          the App ID to be set.
+   * @param   aEnabled
+   *          enable or disable the mark function.
+   */
+  void SetMarkEnabled(in unsigned long aAppId, in boolean aEnabled);
+
+  /**
+   * check if the mark is enabled or not.
+   * @param   aAppId
+   *          the App ID to be
+   * @return  mark function on the App is enabled or not.
+   */
+  boolean GetMarkEnabled(in unsigned long aAppId);
+};

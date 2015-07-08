@@ -480,6 +480,17 @@
   { 0x92, 0x05, 0xc3, 0x09, 0xce, 0xb2, 0xd6, 0x41 } \
 }
 
+// component implementing nsISocketMarkerService
+#define NS_SOCKETMARKER_CONTRACTID \
+    "@mozilla.org/network/socket-marker-service;1"
+#define NS_SOCKETMARKER_CID                            \
+{ /* 02b2335b-a33f-40f2-8188-d20c05702742 */           \
+    0x02b2335b,                                        \
+    0xa33f,                                            \
+    0x40f2,                                            \
+    { 0x81, 0x88, 0xd2, 0x0c, 0x05, 0x70, 0x27, 0x42 } \
+}
+
 /******************************************************************************
  * netwerk/cache/ classes
  */

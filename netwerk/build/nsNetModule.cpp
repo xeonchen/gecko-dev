@@ -143,6 +143,10 @@ namespace net {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "nsSocketMarkerService.h"
+typedef mozilla::net::nsSocketMarkerService nsSocketMarkerService;
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsSocketMarkerService)
+
 extern nsresult
 net_NewIncrementalDownload(nsISupports *, const nsIID &, void **);
 
@@ -828,6 +832,7 @@ NS_DEFINE_NAMED_CID(NS_REDIRECTCHANNELREGISTRAR_CID);
 NS_DEFINE_NAMED_CID(NS_CACHE_STORAGE_SERVICE_CID);
 NS_DEFINE_NAMED_CID(NS_NETWORKPREDICTOR_CID);
 NS_DEFINE_NAMED_CID(NS_CAPTIVEPORTAL_CID);
+NS_DEFINE_NAMED_CID(NS_SOCKETMARKER_CID);
 
 static const mozilla::Module::CIDEntry kNeckoCIDs[] = {
     { &kNS_IOSERVICE_CID, false, nullptr, nsIOServiceConstructor },
@@ -977,6 +982,7 @@ static const mozilla::Module::CIDEntry kNeckoCIDs[] = {
     { &kNS_CACHE_STORAGE_SERVICE_CID, false, nullptr, CacheStorageServiceConstructor },
     { &kNS_NETWORKPREDICTOR_CID, false, nullptr, mozilla::net::Predictor::Create },
     { &kNS_CAPTIVEPORTAL_CID, false, nullptr, mozilla::net::CaptivePortalServiceConstructor },
+    { &kNS_SOCKETMARKER_CID, false, nullptr, nsSocketMarkerServiceConstructor },
     { nullptr }
 };
 
@@ -1131,6 +1137,7 @@ static const mozilla::Module::ContractIDEntry kNeckoContracts[] = {
     { NS_CACHE_STORAGE_SERVICE_CONTRACTID2, &kNS_CACHE_STORAGE_SERVICE_CID },
     { NS_NETWORKPREDICTOR_CONTRACTID, &kNS_NETWORKPREDICTOR_CID },
     { NS_CAPTIVEPORTAL_CONTRACTID, &kNS_CAPTIVEPORTAL_CID },
+    { NS_SOCKETMARKER_CONTRACTID, &kNS_SOCKETMARKER_CID },
     { nullptr }
 };
 
