@@ -60,6 +60,7 @@ UNIFIED_SOURCES += [
     'nsSimpleNestedURI.cpp',
     'nsSimpleStreamListener.cpp',
     'nsSimpleURI.cpp',
+    'nsSocketMarkerService.cpp',
     'nsSocketTransport2.cpp',
     'nsSocketTransportService2.cpp',
     'nsStandardURL.cpp',
