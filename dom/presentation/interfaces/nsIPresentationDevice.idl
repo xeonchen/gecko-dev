@@ -41,6 +41,10 @@ interface nsIPresentationDevice : nsISupports
   // The category of this device, could be "wifi", "bluetooth", "hdmi", etc.
   readonly attribute AUTF8String type;
 
+  //TODO expose more info in order to fulfill UX spec
+  // The UA type of this device, could be "1ua", "2ua", etc.
+  readonly attribute AUTF8String uaType;
+
   // The listener for handling remote session request.
   attribute nsIPresentationDeviceEventListener listener;
 
