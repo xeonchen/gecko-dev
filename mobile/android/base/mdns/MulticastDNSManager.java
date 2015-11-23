@@ -109,14 +109,13 @@ class MulticastDNSEventManager {
 }
 
 class NsdMulticastDNSManager extends MulticastDNSManager implements NativeEventListener {
-    private final NsdManager nsdManager;
+    private final Context context;
     private final MulticastDNSEventManager mEventManager;
     private Map<String, DiscoveryListener> mDiscoveryListeners = null;
     private Map<String, RegistrationListener> mRegistrationListeners = null;
 
-    @TargetApi(16)
     public NsdMulticastDNSManager(final Context context) {
-        nsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
+        this.context = context;
         mEventManager = new MulticastDNSEventManager(this);
         mDiscoveryListeners = new ConcurrentHashMap<String, DiscoveryListener>();
         mRegistrationListeners = new ConcurrentHashMap<String, RegistrationListener>();
@@ -135,9 +134,11 @@ class NsdMulticastDNSManager extends MulticastDNSManager implements NativeEventL
         mEventManager.tearDown();
     }
 
+    @TargetApi(16)
     @Override
     public void handleMessage(final String event, final NativeJSObject message, final EventCallback callback) {
         Log.v(LOGTAG, "handleMessage: " + event);
+        final NsdManager nsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
 
         switch (event) {
             case "NsdManager:DiscoverServices": {
