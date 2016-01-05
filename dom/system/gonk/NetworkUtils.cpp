@@ -22,6 +22,9 @@
 #include <limits>
 #include "mozilla/dom/network/NetUtils.h"
 #include "mozilla/fallible.h"
+#include "mozilla/Function.h"
+#include "nsIEthernetManager.h"
+#include "nsThreadUtils.h"
 
 #include <errno.h>
 #include <string.h>
@@ -442,6 +445,96 @@ static void postMessage(NetworkParams& aOptions, NetworkResultOptions& aResult)
 
   if (*(gNetworkUtils->getMessageCallback()))
     (*(gNetworkUtils->getMessageCallback()))(aResult);
+}
+
+class nsEthernetManagerCallback : public nsIEthernetManagerCallback
+{
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSIETHERNETMANAGERCALLBACK
+
+  using Callback = mozilla::Function<nsresult(bool success,
+                                              const nsAString& message)>;
+
+public:
+  nsEthernetManagerCallback(Callback&& callback);
+
+private:
+  virtual ~nsEthernetManagerCallback() = default;
+
+  Callback mCallback;
+};
+
+NS_IMPL_ISUPPORTS(nsEthernetManagerCallback, nsIEthernetManagerCallback)
+
+nsEthernetManagerCallback::nsEthernetManagerCallback(Callback&& callback)
+  : mCallback(mozilla::Move(callback))
+{
+}
+
+NS_IMETHODIMP
+nsEthernetManagerCallback::Notify(bool success, const nsAString& message)
+{
+  return mCallback(success, message);
+}
+
+static void SetupEthernet(bool aEnable, const nsAString& aInterface)
+{
+  nsAutoString iface(aInterface);
+  NU_DBG("SetupEthernet: %d, %s", aEnable, NS_ConvertUTF16toUTF8(iface).get());
+
+  nsCOMPtr<nsIEthernetManager> ethernetManager =
+    do_GetService("@mozilla.org/ethernetManager;1");
+  MOZ_ASSERT(ethernetManager);
+
+  nsCOMPtr<nsIEthernetManagerCallback> connectCallback =
+    new nsEthernetManagerCallback([iface](bool success, const nsAString& message) {
+      NU_DBG("[%s] Connect: %d, %s\n",
+             NS_ConvertUTF16toUTF8(iface).get(),
+             success,
+             NS_ConvertUTF16toUTF8(message).get());
+      return NS_OK;
+    });
+
+  nsCOMPtr<nsIEthernetManagerCallback> disconnectCallback =
+    new nsEthernetManagerCallback([iface](bool success, const nsAString& message) {
+      NU_DBG("[%s] Disconnect: %d, %s\n",
+             NS_ConvertUTF16toUTF8(iface).get(),
+             success,
+             NS_ConvertUTF16toUTF8(message).get());
+      return NS_OK;
+    });
+
+  nsCOMPtr<nsIEthernetManagerCallback> enableCallback =
+    new nsEthernetManagerCallback([iface,
+                                   ethernetManager,
+                                   connectCallback] (bool success,
+                                                     const nsAString& message) {
+      NU_DBG("[%s] Enable: %d, %s\n",
+             NS_ConvertUTF16toUTF8(iface).get(),
+             success,
+             NS_ConvertUTF16toUTF8(message).get());
+
+      return ethernetManager->Connect(iface, connectCallback);
+    });
+
+  nsCOMPtr<nsIEthernetManagerCallback> addCallback =
+    new nsEthernetManagerCallback([iface,
+                                   ethernetManager,
+                                   enableCallback](bool success,
+                                                   const nsAString& message) {
+      NU_DBG("[%s] AddInterface: %d, %s\n",
+             NS_ConvertUTF16toUTF8(iface).get(),
+             success,
+             NS_ConvertUTF16toUTF8(message).get());
+
+      return ethernetManager->Enable(iface, enableCallback);
+    });
+
+  if (aEnable) {
+    ethernetManager->AddInterface(iface, addCallback);
+  } else {
+    ethernetManager->Disconnect(iface, disconnectCallback);
+  }
 }
 
 void NetworkUtils::runNextQueuedCommandChain()
@@ -1884,6 +1977,17 @@ void NetworkUtils::onNetdMessage(NetdCommand* aCommand)
           NU_DBG("Wifi link down, restarting tethering.");
           runChain(*gWifiTetheringParms, sWifiRetryChain, wifiTetheringFail);
         }
+      }
+
+      if (!strcmp(reason, "Iface linkstate eth0 up")) {
+        NS_DispatchToMainThread(NS_NewRunnableFunction([] {
+          SetupEthernet(true, NS_LITERAL_STRING("eth0"));
+        }));
+      }
+      else if (!strcmp(reason, "Iface linkstate eth0 down")) {
+        NS_DispatchToMainThread(NS_NewRunnableFunction([] {
+          SetupEthernet(false, NS_LITERAL_STRING("eth0"));
+        }));
       }
     }
 
