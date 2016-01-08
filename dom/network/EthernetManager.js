@@ -195,6 +195,7 @@ EthernetManager.prototype = {
       }
 
       if (callback) {
+        Cu.forceGC();
         callback.notify(ethList);
       }
     });
