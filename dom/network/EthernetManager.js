@@ -195,7 +195,7 @@ EthernetManager.prototype = {
       }
 
       if (callback) {
-        callback.notify(ethList);
+        callback.notify(JSON.stringify(ethList));
       }
     });
   },

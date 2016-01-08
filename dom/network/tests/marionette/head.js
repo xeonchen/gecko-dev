@@ -273,7 +273,7 @@ let gTestSuite = (function() {
     let deferred = Promise.defer();
 
     ethernetManager.scan(function onScan(list) {
-      deferred.resolve(list);
+      deferred.resolve(JSON.parse(list));
     });
 
     return deferred.promise;
