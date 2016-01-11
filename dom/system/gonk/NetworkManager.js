@@ -979,9 +979,9 @@ NetworkManager.prototype = {
     // If there is internal interface change (e.g., MOBILE_MMS, MOBILE_SUPL),
     // the function will return null so that it won't trigger type change event
     // in NetworkInformation API.
-    if (network.type != Ci.nsINetworkInterface.NETWORK_TYPE_WIFI &&
-        network.type != Ci.nsINetworkInterface.NETWORK_TYPE_MOBILE &&
-        network.type != Ci.nsINetworkInterface.NETWORK_TYPE_ETHERNET) {
+    if (aNetworkInfo.type != Ci.nsINetworkInterface.NETWORK_TYPE_WIFI &&
+        aNetworkInfo.type != Ci.nsINetworkInterface.NETWORK_TYPE_MOBILE &&
+        aNetworkInfo.type != Ci.nsINetworkInterface.NETWORK_TYPE_ETHERNET) {
       return null;
     }
 
